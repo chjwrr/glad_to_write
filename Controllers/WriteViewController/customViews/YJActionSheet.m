@@ -96,7 +96,7 @@
     
     [UIView animateWithDuration:0.15 animations:^{
         
-        self.frame=CGRectMake(0, kSCREEN_HEIGHT-(ksubViewHeight+ksubViewHeight+ksubViewHeight+ksubViewHeight*count-10)-20, kSCREEN_WIDTH, ksubViewHeight+ksubViewHeight+ksubViewHeight+ksubViewHeight*count+10);
+        self.frame=CGRectMake(0, kSCREEN_HEIGHT-(ksubViewHeight+ksubViewHeight+ksubViewHeight+ksubViewHeight*count-10)-20-kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, ksubViewHeight+ksubViewHeight+ksubViewHeight+ksubViewHeight*count+10);
 
     } completion:^(BOOL finished) {
         if (finished) {

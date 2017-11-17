@@ -50,21 +50,21 @@
 
 //初始化自定义导航栏
 - (void)initNavViewTitle:(NSString *)title leftTitle:(NSString *)leftTitle action:(SEL)dismissViewController{
-    UIView *navView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, 64)];
+    UIView *navView=[[UIView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, kSTATUSBAR_HEIGHT+kNAVIGATIONBAR_HEIGHT)];
     [self.view addSubview:navView];
     
-    UIImageView *bgimageV=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, 64)];
+    UIImageView *bgimageV=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, navView.height)];
     bgimageV.backgroundColor=[UIColor blackColor];
     bgimageV.alpha=0.5;
     [navView addSubview:bgimageV];
     
-    self.lab_title=[[YJThemeLabel alloc]initWithFrame:CGRectMake(0, 20, kSCREEN_WIDTH, 44)];
+    self.lab_title=[[YJThemeLabel alloc]initWithFrame:CGRectMake(0, kSTATUSBAR_HEIGHT, kSCREEN_WIDTH, kNAVIGATIONBAR_HEIGHT)];
     [navView addSubview:self.lab_title];
     self.lab_title.text=title;
     self.lab_title.textAlignment=NSTextAlignmentCenter;
     self.lab_title.font=kSYS_FONTNAME(kFormatterSring(kgetDefaultValueForKey(kuserFontName)), 20);
     
-    self.btn_cancel=[[YJThemeButton alloc]initWithFrame:CGRectMake(0, 20, 44, 44)];
+    self.btn_cancel=[[YJThemeButton alloc]initWithFrame:CGRectMake(0, kSTATUSBAR_HEIGHT, 44, kNAVIGATIONBAR_HEIGHT)];
     [navView addSubview:self.btn_cancel];
     [self.btn_cancel setTitle:leftTitle forState:UIControlStateNormal];
     [self.btn_cancel addTarget:self action:dismissViewController forControlEvents:UIControlEventTouchUpInside];

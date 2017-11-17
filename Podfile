@@ -1,8 +1,7 @@
-platform :ios, '7.0' 
-target 'ModelProduct' do
+platform :ios, '9.0'
+target ‘YueJi’ do
 pod "AFNetworking"
 pod 'IQKeyboardManager'
-pod 'HexColors'
 pod 'MJRefresh'
 pod 'FMDB'
 pod 'FDFullscreenPopGesture'
@@ -12,4 +11,5 @@ pod 'JDStatusBarNotification'
 pod "SDWebImage"
 pod "MWPhotoBrowser"
 pod "DACircularProgress"
+pod 'HexColors’,’~>4.0.0’
 end

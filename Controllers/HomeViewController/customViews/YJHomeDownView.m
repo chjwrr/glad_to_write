@@ -15,6 +15,8 @@
 
 @property (nonatomic,strong) YJThemeButton *btn_right;
 @property (nonatomic,assign) BOOL isShow;
+@property (nonatomic,strong) UIView *downView;
+
 
 @end
 @implementation YJHomeDownView
@@ -40,9 +42,13 @@
     
     CGFloat space=(kSCREEN_WIDTH-44*3)/4;
     
+    _downView = [[UIView alloc]initWithFrame:CGRectMake(0, 44, kSCREEN_WIDTH, 50)];
+    [self addSubview:_downView];
+    _downView.alpha = 0;
+    
     for (int i=0; i<3; i++) {
-        YJThemeButton *button=[[YJThemeButton alloc]initWithFrame:CGRectMake(space+(space+44)*i, 44, 44, 50) imageName:[images objectAtIndex:i]];
-        [self addSubview:button];
+        YJThemeButton *button=[[YJThemeButton alloc]initWithFrame:CGRectMake(space+(space+44)*i, 0, 44, 50) imageName:[images objectAtIndex:i]];
+        [_downView addSubview:button];
         [button setTitle:[titles objectAtIndex:i] forState:UIControlStateNormal];
         button.titleLabel.font=kSYS_FONT(14);
         
@@ -108,13 +114,14 @@
  */
 - (void)show {
     [UIView animateWithDuration:0.15 animations:^{
-        self.frame=CGRectMake(0, kSCREEN_HEIGHT-kviewShowHeight, kSCREEN_WIDTH, kviewShowHeight);
+        self.frame=CGRectMake(0, kSCREEN_HEIGHT-kviewShowHeight - kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, kviewShowHeight);
 
         [_btn_right changeImageName:@"YJHomeCanelMenu"];
-        
+        _downView.alpha = 1;
     } completion:^(BOOL finished) {
         if (finished) {
             _isShow=YES;
+            
         }
     }];
 }
@@ -127,13 +134,14 @@
         return;
     }
     [UIView animateWithDuration:0.15 animations:^{
-        self.frame=CGRectMake(0, kSCREEN_HEIGHT-kviewHiddentHeight, kSCREEN_WIDTH, kviewShowHeight);
+        self.frame=CGRectMake(0, kSCREEN_HEIGHT-kviewHiddentHeight-kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, kviewShowHeight);
 
         [_btn_right changeImageName:@"YJHomeMenu"];
 
     } completion:^(BOOL finished) {
         if (finished) {
             _isShow=NO;
+            _downView.alpha = 0;
         }
     }];
 

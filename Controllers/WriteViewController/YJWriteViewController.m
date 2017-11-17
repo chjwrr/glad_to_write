@@ -74,13 +74,13 @@
     [self.view addSubview:self.bgimageView];
 
     [self.view addSubview:self.lab_time];
-    
+
     [self.view addSubview:self.lab_address];
-    
+
     [self.view addSubview:self.line];
-    
+
     [self.view addSubview:self.textView];
-    
+
     [self.view addSubview:self.downView];
     
     
@@ -127,7 +127,7 @@
 
 - (YJThemeLabel *)lab_time {
     if (!_lab_time) {
-        _lab_time=[[YJThemeLabel alloc]initWithFrame:CGRectMake(20, 20, kSCREEN_WIDTH-40, 20)];
+        _lab_time=[[YJThemeLabel alloc]initWithFrame:CGRectMake(20, kSTATUSBAR_HEIGHT, kSCREEN_WIDTH-40, 20)];
         _lab_time.font=kSYS_FONTNAME(kFormatterSring(kgetDefaultValueForKey(kuserFontName)), 20);
         _lab_time.text=@"";
     }
@@ -169,19 +169,19 @@
 
 - (UITextView *)textView {
     if (!_textView) {
-        _textView=[[UITextView alloc]initWithFrame:CGRectMake(10, self.line.y+self.line.height+5, kSCREEN_WIDTH-20, kSCREEN_HEIGHT-(self.line.y+self.line.height+5)-10-kdownViewHeight)];
+        CGRect frame = CGRectMake(10, self.line.y+self.line.height+5, kSCREEN_WIDTH-20, kSCREEN_HEIGHT-(self.line.y+self.line.height+5)-10-kdownViewHeight - kTABBAR_BOTTOM_HEIGHT);
+        _textView=[[UITextView alloc]initWithFrame:frame];
         _textView.backgroundColor=[UIColor clearColor];
         _textView.delegate=self;
         _textView.text=@"";
         _textView.font=kSYS_FONT(17);
-
     }
     return _textView;
 }
 
 - (UIView *)downView {
     if (!_downView) {
-        _downView=[[UIView alloc]initWithFrame:CGRectMake(0, kSCREEN_HEIGHT-kdownViewHeight, kSCREEN_WIDTH, kdownViewHeight)];
+        _downView=[[UIView alloc]initWithFrame:CGRectMake(0, kSCREEN_HEIGHT-kdownViewHeight-kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, kdownViewHeight)];
         
         UIImageView *imagev=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kSCREEN_WIDTH, kdownViewHeight)];
         [_downView addSubview:imagev];
@@ -296,14 +296,14 @@
 /**
  *  监听键盘刚消失
  *
- *  @param tification
+ *  @param tification 通知
  */
 - (void)keyBoardWillHide:(NSNotification *)tification {
     [UIView animateWithDuration:0.15 animations:^{
         
-        self.textView.frame=CGRectMake(10, self.line.y+self.line.height+5, kSCREEN_WIDTH-20, kSCREEN_HEIGHT-(self.line.y+self.line.height+5)-10-kdownViewHeight);
+        self.textView.frame = CGRectMake(10, self.line.y+self.line.height+5, kSCREEN_WIDTH-20, kSCREEN_HEIGHT-(self.line.y+self.line.height+5)-10-kdownViewHeight - kTABBAR_BOTTOM_HEIGHT);
         
-        self.downView.frame=CGRectMake(0, kSCREEN_HEIGHT-kdownViewHeight, kSCREEN_WIDTH, kdownViewHeight);
+        self.downView.frame=CGRectMake(0, kSCREEN_HEIGHT-kdownViewHeight - kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, kdownViewHeight);
         [btn_keyboard setImage:kImageName(@"YJWritekeyboardup") forState:UIControlStateNormal];
         
     } completion:^(BOOL finished) {

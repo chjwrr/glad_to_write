@@ -86,7 +86,7 @@
 - (UITableView *)tableView {
     if (!_tableView) {
         
-        _tableView=[[UITableView alloc]initWithFrame:CGRectMake(0,0,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight])];
+        _tableView=[[UITableView alloc]initWithFrame:CGRectMake(0,kSTATUSBAR_HEIGHT,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight] - kTABBAR_BOTTOM_HEIGHT - kSTATUSBAR_HEIGHT)];
         _tableView.delegate=self;
         _tableView.dataSource=self;
         _tableView.separatorStyle=UITableViewCellSeparatorStyleNone;
@@ -98,7 +98,7 @@
 
 - (YJHomeDownView *)downView {
     if (!_downView) {
-        _downView=[[YJHomeDownView alloc]initWithFrame:CGRectMake(0, kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight], kSCREEN_WIDTH, [YJHomeDownView viewShowHeight])];
+        _downView=[[YJHomeDownView alloc]initWithFrame:CGRectMake(0, kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight] - kTABBAR_BOTTOM_HEIGHT, kSCREEN_WIDTH, [YJHomeDownView viewShowHeight])];
         _downView.delegate=self;
         
     }
@@ -154,10 +154,10 @@
  */
 - (void)YJHomeDownViewShowState:(BOOL)isShow {
     
-    if (isShow) {
-        _tableView.frame=CGRectMake(0,0,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewShowHeight]);
-    }else
-        _tableView.frame=CGRectMake(0,0,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight]);
+//    if (isShow) {
+//        _tableView.frame=CGRectMake(0,kSTATUSBAR_HEIGHT,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewShowHeight] - kTABBAR_BOTTOM_HEIGHT);
+//    }else
+//        _tableView.frame=CGRectMake(0,kSTATUSBAR_HEIGHT,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight]);
 
 }
 
@@ -213,7 +213,7 @@
     
     [_downView hiddent];
     
-    _tableView.frame=CGRectMake(0,0,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight]);
+    _tableView.frame=CGRectMake(0,kSTATUSBAR_HEIGHT,kSCREEN_WIDTH,kSCREEN_HEIGHT-[YJHomeDownView viewHiddentwHeight] - kTABBAR_BOTTOM_HEIGHT - kSTATUSBAR_HEIGHT);
 
 }
 - (void)didReceiveMemoryWarning {
