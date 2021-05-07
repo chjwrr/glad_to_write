@@ -47,8 +47,14 @@
 
 #define iPhone6P_6sP_7P_8P  ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1242, 2208), [[UIScreen mainScreen] currentMode].size) : NO)
 
-#define iPhoneX             ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
-
+#define iPhoneX ({\
+    BOOL isBangsScreen = NO; \
+    if (@available(iOS 11.0, *)) { \
+    UIWindow *window = [[UIApplication sharedApplication].windows firstObject]; \
+    isBangsScreen = window.safeAreaInsets.bottom > 0; \
+    } \
+    isBangsScreen; \
+})
 
 
 // iPhoneX　安全区域=812px—Status Bar (44px) +Home Indicator(34px)

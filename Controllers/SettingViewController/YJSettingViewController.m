@@ -266,7 +266,8 @@
     
     
     [mailPicker setMessageBody:[NSString stringWithFormat:@"%@\n",emailBody] isHTML:YES];
-    
+    mailPicker.modalPresentationStyle = UIModalPresentationFullScreen;
+
     [self presentViewController:mailPicker animated:YES completion:^{
         
     }];

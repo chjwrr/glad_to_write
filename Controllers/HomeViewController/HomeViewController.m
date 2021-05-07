@@ -140,6 +140,8 @@
     writeVC.isCreat=NO;
     writeVC.isDismiss=YES;
     writeVC.noteFilePath=[_filePaths objectAtIndex:indexPath.row];
+    writeVC.modalPresentationStyle = UIModalPresentationFullScreen;
+
     [self presentViewController:writeVC animated:YES completion:^{
         
     }];
@@ -174,6 +176,7 @@
             break;
         case 101:{
             BaseNavigationController *fontSetVC=[[BaseNavigationController alloc]initWithRootViewController:[[YJFontSettingViewController alloc]init]];
+            fontSetVC.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:fontSetVC animated:YES completion:^{
 
             }];
@@ -181,6 +184,8 @@
             break;
         case 102:{
             BaseNavigationController *fontSetVC=[[BaseNavigationController alloc]initWithRootViewController:[[YJSettingViewController alloc]init]];
+            fontSetVC.modalPresentationStyle = UIModalPresentationFullScreen;
+
             [self presentViewController:fontSetVC animated:YES completion:^{
                 
             }];
@@ -201,6 +206,8 @@
     YJWriteViewController *writeVC=[[YJWriteViewController alloc]init];
     writeVC.isCreat=YES;
     writeVC.noteFilePath=nil;
+    writeVC.modalPresentationStyle = UIModalPresentationFullScreen;
+
     [self presentViewController:writeVC animated:YES completion:^{
         
     }];

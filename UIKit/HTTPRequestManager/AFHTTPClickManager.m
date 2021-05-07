@@ -44,24 +44,20 @@
     
     NSLog(@"POST 请求接口：%@\n请求参数：%@",path,params);
 
-    [self POST:path parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSDictionary *rootDic=(NSDictionary *)responseObject;
-        
-        successBlock(rootDic);
-        finishBlock();
-        NSLog(@"POST 请求接口：%@\n\n请求结果：%@",path,rootDic);
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
-        failureBlock(error);
-        finishBlock();
-        
-        NSLog(@"POST 请求接口：%@\n\n出错原因：%@",path,error);
-        
-    }];
+    [self POST:path parameters:params headers:NULL progress:^(NSProgress * _Nonnull uploadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSDictionary *rootDic=(NSDictionary *)responseObject;
+            
+            successBlock(rootDic);
+            finishBlock();
+            NSLog(@"POST 请求接口：%@\n\n请求结果：%@",path,rootDic);
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            failureBlock(error);
+            finishBlock();
+            
+            NSLog(@"POST 请求接口：%@\n\n出错原因：%@",path,error);
+        }];
     
     
 }
@@ -81,26 +77,21 @@
     self.responseSerializer=[AFJSONResponseSerializer serializer];
     self.responseSerializer.acceptableContentTypes=[NSSet setWithObjects:@"application/json",@"text/json",@"text/plain", @"text/html", nil];
     
-    
-    
-    [self GET:path parameters:params progress:^(NSProgress * _Nonnull uploadProgress) {
-        
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        
-        NSDictionary *rootDic=(NSDictionary *)responseObject;
-        
-        successBlock(rootDic);
-        finishBlock();
-        NSLog(@"GET 请求接口：%@\n\n请求结果：%@",path,rootDic);
-        
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        
-        failureBlock(error);
-        finishBlock();
-        
-        NSLog(@"GET 请求接口：%@\n\n出错原因：%@",path,error);
-        
-    }];
+    [self GET:path parameters:params headers:NULL progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+            NSDictionary *rootDic=(NSDictionary *)responseObject;
+            
+            successBlock(rootDic);
+            finishBlock();
+            NSLog(@"GET 请求接口：%@\n\n请求结果：%@",path,rootDic);
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            failureBlock(error);
+            finishBlock();
+            
+            NSLog(@"GET 请求接口：%@\n\n出错原因：%@",path,error);
+        }];
 
     
     

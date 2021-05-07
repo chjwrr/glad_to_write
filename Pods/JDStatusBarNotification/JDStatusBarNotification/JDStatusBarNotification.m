@@ -116,6 +116,11 @@
                                       prepare:prepareBlock];
 }
 
++ (void)updateStatus:(NSString *)status;
+{
+  [[self sharedInstance] setStatus:status];
+}
+
 + (void)showProgress:(CGFloat)progress;
 {
   [[self sharedInstance] setProgress:progress];
@@ -207,6 +212,11 @@
     }
   }
 
+  // Force update the TopBar frame if the height is 0
+  if (self.topBar.frame.size.height == 0) {
+    [self updateContentFrame:[[UIApplication sharedApplication] statusBarFrame]];
+  }
+
   // cancel previous dismissing & remove animations
   [[NSRunLoop currentRunLoop] cancelPerformSelector:@selector(dismiss) target:self argument:nil];
   [self.topBar.layer removeAllAnimations];
@@ -284,10 +294,10 @@
   void(^complete)(BOOL) = ^(BOOL finished) {
     [self.overlayWindow removeFromSuperview];
     [self.overlayWindow setHidden:YES];
-    _overlayWindow.rootViewController = nil;
-    _overlayWindow = nil;
-    _progressView = nil;
-    _topBar = nil;
+    self.overlayWindow.rootViewController = nil;
+    self->_overlayWindow = nil;
+    self->_progressView = nil;
+    self->_topBar = nil;
   };
 
   if (animated) {
@@ -343,7 +353,18 @@
   [self.topBar.layer removeAllAnimations];
 }
 
-#pragma mark Progress & Activity
+#pragma mark Modifications
+
+- (void)setStatus:(NSString *)status;
+{
+  if (_topBar == nil) return;
+
+  UILabel *textLabel = self.topBar.textLabel;
+  textLabel.accessibilityLabel = status;
+  textLabel.text = status;
+
+  [self.topBar setNeedsLayout];
+}
 
 - (void)setProgress:(CGFloat)progress;
 {
@@ -440,8 +461,7 @@
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < 70000 // only when deployment target is < ios7
     _overlayWindow.rootViewController.wantsFullScreenLayout = YES;
 #endif
-    [self updateWindowTransform];
-    [self updateTopBarFrameWithStatusBarFrame:[[UIApplication sharedApplication] statusBarFrame]];
+    [self updateContentFrame:[[UIApplication sharedApplication] statusBarFrame]];
   }
   return _overlayWindow;
 }
@@ -453,6 +473,7 @@
     [self.overlayWindow.rootViewController.view addSubview:_topBar];
 
     JDStatusBarStyle *style = self.activeStyle ?: self.defaultStyle;
+    self.topBar.heightForIPhoneX = style.heightForIPhoneX;
     if (style.animationType != JDStatusBarAnimationTypeFade) {
       self.topBar.transform = CGAffineTransformMakeTranslation(0, -self.topBar.frame.size.height);
     } else {
@@ -472,6 +493,11 @@
 
 #pragma mark Rotation
 
+- (void)updateContentFrame:(CGRect)rect {
+  [self updateWindowTransform];
+  [self updateTopBarFrameWithStatusBarFrame:rect];
+}
+
 - (void)updateWindowTransform;
 {
   UIWindow *window = [[UIApplication sharedApplication]
@@ -480,22 +506,33 @@
   _overlayWindow.frame = window.frame;
 }
 
+static CGFloat topBarHeightAdjustedForIphoneX(JDStatusBarStyle *style, CGFloat height) {
+  CGFloat topLayoutMargin = JDStatusBarRootVCLayoutMargin().top;
+  if (topLayoutMargin > 0) {
+    switch (style.heightForIPhoneX) {
+      case JDStatusBarHeightForIPhoneXFullNavBar:
+        return height + topLayoutMargin;
+      case JDStatusBarHeightForIPhoneXHalf:
+        return height + 8.0;
+    }
+  } else {
+    return height;
+  }
+}
+
 - (void)updateTopBarFrameWithStatusBarFrame:(CGRect)rect;
 {
   CGFloat width = MAX(rect.size.width, rect.size.height);
   CGFloat height = MIN(rect.size.width, rect.size.height);
 
-  // on ios7 fix position, if statusBar has double height
+  // adjust position for iOS 7, if statusBar has double height
   CGFloat yPos = 0;
   if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0 && height == 40.0) {
     yPos = -height/2.0;
   }
 
-  // adjust for iPhone X
-  CGFloat topLayoutMargin = JDStatusBarRootVCLayoutMargin().top;
-  if (topLayoutMargin > 0) {
-    height += topLayoutMargin;
-  }
+  // adjust height for iPhone X
+  height = topBarHeightAdjustedForIphoneX(self.activeStyle ?: self.defaultStyle, height);
 
   _topBar.frame = CGRectMake(0, yPos, width, height);
 }
@@ -507,9 +544,8 @@
 
   // update window & statusbar
   void(^updateBlock)(void) = ^{
-    [self updateWindowTransform];
-    [self updateTopBarFrameWithStatusBarFrame:newBarFrame];
-    self.progress = self.progress; // // relayout progress bar
+    [self updateContentFrame:newBarFrame];
+    self.progress = self.progress; // relayout progress bar
   };
 
   [UIView animateWithDuration:duration animations:^{
@@ -550,58 +586,64 @@
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
 - (NSUInteger)supportedInterfaceOrientations {
+  return [[self mainController] supportedInterfaceOrientations];
+}
 #else
-  - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return [[self mainController] supportedInterfaceOrientations];
+}
 #endif
-    return [[self mainController] supportedInterfaceOrientations];
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+  return [[self mainController] preferredInterfaceOrientationForPresentation];
+}
+
+// statusbar
+
+static BOOL JDUIViewControllerBasedStatusBarAppearanceEnabled() {
+  static BOOL enabled = NO;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    enabled = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+  });
+
+  return enabled;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
+    return [[self mainController] preferredStatusBarStyle];
   }
 
-  - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
-    return [[self mainController] preferredInterfaceOrientationForPresentation];
-  }
+  return [[UIApplication sharedApplication] statusBarStyle];
+}
 
-  // statusbar
-
-  static BOOL JDUIViewControllerBasedStatusBarAppearanceEnabled() {
-    static BOOL enabled = NO;
-    static dispatch_once_t onceToken;
-
-    dispatch_once(&onceToken, ^{
-      enabled = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
-    });
-
-    return enabled;
-  }
-
-  - (UIStatusBarStyle)preferredStatusBarStyle {
-    if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
-      return [[self mainController] preferredStatusBarStyle];
-    }
-
-    return [[UIApplication sharedApplication] statusBarStyle];
-  }
-
-  - (BOOL)prefersStatusBarHidden {
+- (BOOL)prefersStatusBarHidden {
+  if (@available(iOS 13, *)) {
+    return JDStatusBarRootVCLayoutMargin().top == 0;
+  } else {
     return NO;
   }
+}
 
-  - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
-    if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
-      return [[self mainController] preferredStatusBarUpdateAnimation];
-    }
-    return [super preferredStatusBarUpdateAnimation];
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+  if(JDUIViewControllerBasedStatusBarAppearanceEnabled()) {
+    return [[self mainController] preferredStatusBarUpdateAnimation];
   }
+  return [super preferredStatusBarUpdateAnimation];
+}
 
-  @end
+@end
 
-  @implementation UIApplication (mainWindow)
-  // we don't want the keyWindow, since it could be our own window
-  - (UIWindow*)mainApplicationWindowIgnoringWindow:(UIWindow *)ignoringWindow {
-    for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
-      if (!window.hidden && window != ignoringWindow) {
-        return window;
-      }
+@implementation UIApplication (mainWindow)
+// we don't want the keyWindow, since it could be our own window
+- (UIWindow*)mainApplicationWindowIgnoringWindow:(UIWindow *)ignoringWindow {
+  for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+    if (!window.hidden && window != ignoringWindow) {
+      return window;
     }
-    return nil;
   }
-  @end
+  return nil;
+}
+@end

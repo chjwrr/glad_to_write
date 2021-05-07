@@ -1,6 +1,6 @@
 # JDStatusBarNotification
 
-Show messages on top of the status bar. Customizable colors, font and animation. Supports progress display and can show an activity indicator. iOS 7/8 ready. iOS6 support. Please open a [Github issue], if you think anything is missing or wrong.
+Show messages on top of the status bar. Customizable colors, font and animation. Supports progress display and can show an activity indicator. iOS 6+ support, iPhone X support. Please open a [Github issue], if you think anything is missing or wrong.
 
 ![Animation](gfx/animation.gif "Animation")
 
@@ -26,6 +26,16 @@ Show messages on top of the status bar. Customizable colors, font and animation.
 `github "calimarkus/JDStatusBarNotification"`
 
 (more infos on Carthage [here](https://github.com/Carthage/Carthage))
+
+## Beware: App Rejections
+
+Some people informed me, that their apps got rejected for using status bar overlays (for violating 10.1/10.3).
+All cases I'm aware of are listed here:
+
+- [@goelv](https://github.com/goelv) in [#15](https://github.com/calimarkus/JDStatusBarNotification/issues/15)
+- [@dskyu](https://github.com/dskyu) in [#30](https://github.com/calimarkus/JDStatusBarNotification/issues/30)
+- [@graceydb](https://github.com/graceydb) in [#49](https://github.com/calimarkus/JDStatusBarNotification/issues/49)
+- [@hongdong](https://github.com/hongdong) in [#91](https://github.com/calimarkus/JDStatusBarNotification/issues/91)
 
 ## Usage
 
@@ -75,10 +85,6 @@ Use them with the following methods:
                  
 To present a notification using a custom style, use the `identifier` you specified in `addStyleNamed:prepare:`. See Customization below.
 
-### Beware
-
-[@goelv](https://github.com/goelv) / [@dskyu](https://github.com/dskyu) / [@graceydb](https://github.com/graceydb) informed me (see [#15](https://github.com/calimarkus/JDStatusBarNotification/issues/15), [#30](https://github.com/calimarkus/JDStatusBarNotification/issues/30), [#49](https://github.com/calimarkus/JDStatusBarNotification/issues/49)), that his app got rejected because of a status bar overlay (for violating 10.1/10.3). So don't overuse it. Although I haven't heard of any other cases.
-
 ## Customization
 
     + (void)setDefaultStyle:(JDPrepareStyleBlock)prepareBlock;
@@ -124,6 +130,11 @@ The `prepareBlock` gives you a copy of the default style, which can be modified 
 - `JDStatusBarProgressBarPositionTop`
 - `JDStatusBarProgressBarPositionBelow`
 - `JDStatusBarProgressBarPositionNavBar`
+
+#### iPhone X behavior
+
+- `JDStatusBarHeightForIPhoneXHalf`
+- `JDStatusBarHeightForIPhoneXFullNavBar`
 
 ## Twitter
 

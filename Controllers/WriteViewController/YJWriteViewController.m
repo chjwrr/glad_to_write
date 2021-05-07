@@ -175,6 +175,7 @@
         _textView.delegate=self;
         _textView.text=@"";
         _textView.font=kSYS_FONT(17);
+        _textView.textColor = [UIColor blackColor];
     }
     return _textView;
 }
